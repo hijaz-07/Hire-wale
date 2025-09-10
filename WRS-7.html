@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hirewale — Worker Registration (Step 7)</title>
+  <style>
+    :root{
+      --brand-600:#0ea5e9;
+      --brand-700:#0284c7;
+      --ink:#0f172a;
+      --muted:#64748b;
+      --bg:#f8fafc;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0; font-family:Poppins,system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,Noto Sans,Helvetica,Arial;
+      min-height:100svh; display:grid; place-items:center; color:var(--ink);
+      background: radial-gradient(1200px 600px at 10% 10%, #e0f2fe 0%, transparent 60%),
+                  radial-gradient(1000px 500px at 90% 20%, #bae6fd 0%, transparent 60%),
+                  linear-gradient(180deg, #f0f9ff 0%, #ffffff 40%, #f8fafc 100%);
+    }
+    .shell{width:min(100%,680px); padding:32px; background:white; border-radius:16px; box-shadow:0 8px 20px rgba(0,0,0,.08);}
+    header{text-align:center; margin-bottom:18px}
+    .brand{font-weight:700; font-size:clamp(22px,3.6vw,34px)}
+    .tag{color:var(--muted); font-size:clamp(12px,2.2vw,14px)}
+    .stepper{display:flex; gap:10px; justify-content:center; margin:18px 0 26px}
+    .dot{height:10px; width:10px; border-radius:99px; background:#e2e8f0; opacity:.7; transition:all .3s}
+    .dot.active{width:44px; background:var(--brand-600); opacity:1}
+    form{display:grid; gap:18px; margin-top:10px}
+    label{font-weight:500; font-size:14px; display:flex; align-items:center; gap:8px}
+    .terms-box{
+      border:1px solid #cbd5e1; border-radius:8px; padding:12px; background:#f9fafb;
+      height:180px; overflow-y:scroll; font-size:13px; color:var(--muted);
+    }
+    button{
+      background:var(--brand-600); color:white; font-weight:600; border:none; border-radius:8px;
+      padding:12px; cursor:pointer; font-size:15px; transition:background .3s;
+    }
+    button:hover{background:var(--brand-700)}
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <header>
+      <div class="brand">Hirewale · Worker Registration</div>
+      <div class="tag">Step 7 of 8 — Terms & Conditions</div>
+    </header>
+
+    <div class="stepper" aria-hidden="true">
+      <div class="dot"></div>
+      <div class="dot"></div>
+      <div class="dot"></div>
+      <div class="dot"></div>
+      <div class="dot"></div>
+      <div class="dot"></div>
+      <div class="dot active"></div>
+      <div class="dot"></div>
+    </div>
+
+    <!-- Form -->
+    <form id="termsForm">
+      <div>
+        <div class="terms-box">
+          <p><strong>1.</strong> Workers must maintain professional behavior with customers at all times.</p>
+          <p><strong>2.</strong> Commission of X% will be applied on each completed job as per Hirewale policy.</p>
+          <p><strong>3.</strong> Cancellation by worker should be avoided; repeated cancellations may affect ranking.</p>
+          <p><strong>4.</strong> Personal information, bank details, and documents must be accurate and valid.</p>
+          <p><strong>5.</strong> Hirewale reserves the right to verify submitted documents and profiles.</p>
+          <p><strong>6.</strong> Any fraudulent activity will lead to permanent account suspension.</p>
+          <p><strong>7.</strong> By agreeing, you accept the Hirewale Service Policy and Terms & Conditions.</p>
+        </div>
+      </div>
+
+      <div>
+        <label>
+          <input type="checkbox" id="agree" required>
+          I agree to Hirewale’s Terms & Conditions and Service Policy
+        </label>
+      </div>
+
+      <button type="submit">Next →</button>
+    </form>
+  </div>
+
+  <script>
+    document.getElementById('termsForm').addEventListener('submit', (e) => {
+      e.preventDefault();
+
+      const agree = document.getElementById('agree').checked;
+      if(!agree){
+        alert('You must agree to the terms to continue.');
+        return;
+      }
+
+      const workerData = JSON.parse(sessionStorage.getItem('workerData')) || {};
+      workerData.agreedTerms = true;
+      sessionStorage.setItem('workerData', JSON.stringify(workerData));
+
+      // Redirect to Step 8 (Final Step / Submit)
+      window.location.href = 'WRS-8.html';
+    });
+  </script>
+</body>
+</html>

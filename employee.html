@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Hirewale · Worker Registration · Step 1</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --brand-600:#0ea5e9; /* sky-500 */
+      --brand-700:#0284c7; /* sky-600 */
+      --ink:#0f172a;       /* slate-900 */
+      --muted:#64748b;     /* slate-500 */
+      --bg:#f8fafc;        /* slate-50 */
+      --success:#16a34a;   /* green-600 */
+      --danger:#dc2626;    /* red-600 */
+      --warning:#f59e0b;   /* amber-500 */
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0; font-family:Poppins,system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell, Noto Sans, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+      min-height:100svh; display:grid; place-items:center; color:var(--ink);
+      background: radial-gradient(1200px 600px at 10% 10%, #e0f2fe 0%, transparent 60%),
+                  radial-gradient(1000px 500px at 90% 20%, #bae6fd 0%, transparent 60%),
+                  linear-gradient(180deg, #f0f9ff 0%, #ffffff 40%, #f8fafc 100%);
+    }
+    .shell{width:min(100%, 980px); padding:32px}
+    header{ text-align:center; margin-bottom:18px }
+    .brand{font-weight:700; font-size:clamp(22px, 3.6vw, 34px); letter-spacing:0.2px}
+    .tag{color:var(--muted); font-size:clamp(12px, 2.2vw, 14px)}
+
+    .stepper{display:flex; gap:10px; align-items:center; justify-content:center; margin:18px 0 26px}
+    .dot{height:10px; width:10px; border-radius:99px; background:#e2e8f0; opacity:.7}
+    .dot.active{width:44px; background:var(--brand-600); opacity:1}
+
+    .card{ background:#fff; border:1px solid #e5e7eb; border-radius:18px; box-shadow:0 10px 30px rgba(2,132,199,.08); padding: clamp(18px, 4.2vw, 30px)}
+    form{display:grid; gap:18px}
+    .row{display:grid; gap:12px}
+    @media (min-width:720px){ .grid-2{ grid-template-columns:1fr 1fr; gap:16px } }
+
+    label{font-weight:600; font-size:14px}
+    .help{font-size:12px; color:var(--muted)}
+
+    .field{display:flex; align-items:center; gap:10px; background:#f8fafc; border:1px solid #e2e8f0; border-radius:12px; padding:12px 14px}
+    .field input{flex:1; font:inherit; border:0; outline:0; background:transparent; color:var(--ink)}
+    .field input::placeholder{color:#94a3b8}
+    .field button.inline{border:0; background:var(--brand-600); color:#fff; font-weight:600; padding:10px 12px; border-radius:10px; cursor:pointer}
+    .field button.inline[disabled]{opacity:.6; cursor:not-allowed}
+
+    .otpWrap{display:none; gap:10px}
+    .otpWrap.show{display:flex}
+    .status{font-size:12px; font-weight:600}
+    .status.ok{color:var(--success)}
+    .status.err{color:var(--danger)}
+
+    .strength{
+      display:grid; gap:8px; margin-top:6px
+    }
+    .bar{height:8px; background:#e2e8f0; border-radius:99px; overflow:hidden}
+    .bar > span{display:block; height:100%; width:0%; background:var(--danger); transition:width .25s ease, background .25s ease}
+    .checks{ display:grid; gap:6px; grid-template-columns: repeat(2,minmax(0,1fr)); font-size:12px; color:var(--muted)}
+    .checks .ok{ color:var(--success); font-weight:600 }
+
+    .actions{display:flex; gap:12px; justify-content:flex-end; margin-top:8px}
+    .btn{border:0; padding:12px 18px; border-radius:12px; font-weight:700; cursor:pointer}
+    .btn.secondary{background:#e2e8f0}
+    .btn.primary{background:var(--brand-700); color:#fff}
+    .btn[disabled]{opacity:.6; cursor:not-allowed}
+
+    .tiny{font-size:11px; color:#94a3b8}
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <header>
+      <div class="brand">Hirewale · Worker Registration</div>
+      <div class="tag">Step 1 of 8 — Basic Info</div>
+    </header>
+
+    <div class="stepper" aria-hidden="true">
+      <div class="dot active"></div>
+      <div class="dot"></div>
+      <div class="dot"></div>
+      <div class="dot"></div>
+      <div class="dot"></div>
+      <div class="dot"></div>
+      <div class="dot"></div>
+      <div class="dot"></div>
+    </div>
+
+    <section class="card">
+      <form id="step1Form" autocomplete="off">
+        <!-- Full Name -->
+        <div class="row">
+          <label for="fullName">Full Name</label>
+          <div class="field">
+            <input id="fullName" name="fullName" type="text" placeholder="e.g., Anil Kumar" required />
+          </div>
+        </div>
+
+        <!-- Mobile + OTP -->
+        <div class="row">
+          <label for="mobile">Mobile Number <span class="help">(OTP verification required)</span></label>
+          <div class="field">
+            <span>+91</span>
+            <input id="mobile" name="mobile" type="tel" inputmode="numeric" pattern="[6-9][0-9]{9}" minlength="10" maxlength="10" placeholder="9876543210" required />
+            <button type="button" id="sendOtpBtn" class="inline">Send OTP</button>
+          </div>
+          <div class="otpWrap" id="otpWrap">
+            <div class="field" style="flex:1">
+              <input id="otp" name="otp" type="text" inputmode="numeric" minlength="6" maxlength="6" placeholder="Enter 6-digit OTP" />
+            </div>
+            <button type="button" id="verifyOtpBtn" class="btn primary" style="padding:10px 14px">Verify</button>
+            <div id="otpStatus" class="status" aria-live="polite"></div>
+          </div>
+          <div class="tiny" id="otpHint" hidden></div>
+        </div>
+
+        <!-- Email (optional) -->
+        <div class="row">
+          <label for="email">Email <span class="help">(optional, for recovery)</span></label>
+          <div class="field">
+            <input id="email" name="email" type="email" inputmode="email" placeholder="you@example.com" />
+          </div>
+        </div>
+
+        <!-- Password + strength + confirm -->
+        <div class="grid-2">
+          <div class="row">
+            <label for="password">Create Password</label>
+            <div class="field">
+              <input id="password" name="password" type="password" placeholder="At least 8 characters" required />
+            </div>
+            <div class="strength">
+              <div class="bar" aria-hidden="true"><span id="pwBar"></span></div>
+              <div class="checks">
+                <div id="chkLen">• 8+ characters</div>
+                <div id="chkUp">• Uppercase letter</div>
+                <div id="chkNum">• Number</div>
+                <div id="chkSym">• Special character</div>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <label for="confirm">Confirm Password</label>
+            <div class="field">
+              <input id="confirm" name="confirm" type="password" placeholder="Re-type password" required />
+            </div>
+            <div id="matchMsg" class="status" aria-live="polite"></div>
+          </div>
+        </div>
+
+        <div class="actions">
+          <button type="button" class="btn secondary" onclick="window.location.href='home.html'">Back</button>
+          <button type="submit" id="nextBtn" class="btn primary" disabled>Next →</button>
+        </div>
+        <div class="tiny">By continuing, you agree to our data processing for registration. Full Terms appear in Step 7.</div>
+      </form>
+    </section>
+  </div>
+
+  <script>
+    // —— Helpers ——
+    const el = (id) => document.getElementById(id);
+
+    const fullName = el('fullName');
+    const mobile   = el('mobile');
+    const sendOtpBtn = el('sendOtpBtn');
+    const otpWrap  = el('otpWrap');
+    const otp      = el('otp');
+    const verifyOtpBtn = el('verifyOtpBtn');
+    const otpStatus= el('otpStatus');
+    const otpHint  = el('otpHint');
+
+    const password = el('password');
+    const confirm  = el('confirm');
+    const pwBar    = el('pwBar');
+    const chkLen   = el('chkLen');
+    const chkUp    = el('chkUp');
+    const chkNum   = el('chkNum');
+    const chkSym   = el('chkSym');
+    const matchMsg = el('matchMsg');
+
+    const nextBtn  = el('nextBtn');
+
+    let generatedOTP = '';
+    let otpVerified  = false;
+    let resendTimer  = 0;
+    let timerHandle  = null;
+
+    function updateChecklist(ok, el){ el.classList.toggle('ok', ok); if(ok){ el.textContent = '✓ ' + el.textContent.replace(/^✓\s+|•\s+/,''); } else { el.textContent = '• ' + el.textContent.replace(/^✓\s+|•\s+/,''); } }
+
+    function evaluatePassword(p){
+      const hasLen = p.length >= 8;
+      const hasUp  = /[A-Z]/.test(p);
+      const hasNum = /[0-9]/.test(p);
+      const hasSym = /[^A-Za-z0-9]/.test(p);
+      const score = [hasLen,hasUp,hasNum,hasSym].filter(Boolean).length;
+
+      updateChecklist(hasLen, chkLen);
+      updateChecklist(hasUp,  chkUp);
+      updateChecklist(hasNum, chkNum);
+      updateChecklist(hasSym, chkSym);
+
+      let pct = [0, 25, 55, 80, 100][score];
+      pwBar.style.width = pct + '%';
+      pwBar.style.background = score < 2 ? 'var(--danger)' : (score < 4 ? 'var(--warning)' : 'var(--success)');
+
+      return score === 4; // strong
+    }
+
+    function updateNextState(){
+      const nameOk = fullName.value.trim().length >= 2;
+      const pwOk   = evaluatePassword(password.value);
+      const match  = password.value && (password.value === confirm.value);
+      matchMsg.textContent = match ? 'Passwords match' : (confirm.value ? 'Passwords do not match' : '');
+      matchMsg.className = 'status ' + (match ? 'ok' : 'err');
+
+      nextBtn.disabled = !(nameOk && otpVerified && pwOk && match);
+    }
+
+    password.addEventListener('input', updateNextState);
+    confirm.addEventListener('input', updateNextState);
+    fullName.addEventListener('input', updateNextState);
+
+    // —— OTP flow (Demo) ——
+    function startResendTimer(seconds){
+      resendTimer = seconds;
+      sendOtpBtn.disabled = true;
+      sendOtpBtn.textContent = 'Resend in ' + resendTimer + 's';
+      timerHandle = setInterval(() => {
+        resendTimer--;
+        if(resendTimer <= 0){
+          clearInterval(timerHandle);
+          sendOtpBtn.disabled = false;
+          sendOtpBtn.textContent = 'Send OTP';
+        } else {
+          sendOtpBtn.textContent = 'Resend in ' + resendTimer + 's';
+        }
+      }, 1000);
+    }
+
+    sendOtpBtn.addEventListener('click', () => {
+      const mv = mobile.value.trim();
+      const valid = /^[6-9][0-9]{9}$/.test(mv);
+      if(!valid){ alert('Enter a valid 10-digit Indian mobile number starting with 6-9.'); return; }
+
+      // DEMO ONLY: generate a mock OTP.
+      generatedOTP = ('' + Math.floor(100000 + Math.random()*900000));
+      otpWrap.classList.add('show');
+      otp.value = '';
+      otpStatus.textContent = '';
+      otpHint.hidden = false;
+      otpHint.textContent = 'DEV: For testing, OTP is ' + generatedOTP + '. Replace this with real SMS API in production.';
+
+      // TODO: Integrate SMS provider (Razorpay/MSG91/Twilio) here.
+      startResendTimer(30);
+    });
+
+    verifyOtpBtn.addEventListener('click', () => {
+      if(otp.value.trim() === generatedOTP){
+        otpVerified = true;
+        otpStatus.textContent = 'Mobile verified';
+        otpStatus.className = 'status ok';
+        mobile.readOnly = true;
+        sendOtpBtn.disabled = true;
+        sendOtpBtn.textContent = 'Verified';
+        otpWrap.classList.remove('show');
+        otpHint.hidden = true;
+      } else {
+        otpVerified = false;
+        otpStatus.textContent = 'Invalid OTP';
+        otpStatus.className = 'status err';
+      }
+      updateNextState();
+    });
+
+    // —— Form submit ——
+    document.getElementById('step1Form').addEventListener('submit', (e) => {
+      e.preventDefault();
+      // Persist minimal progress (avoid storing the raw password in real apps!)
+      const payload = {
+        fullName: fullName.value.trim(),
+        mobile: mobile.value.trim(),
+        email: document.getElementById('email').value.trim() || null,
+        // WARNING: Do not store plain passwords. This is only to pass data to next step in a demo.
+        password: password.value
+      };
+      sessionStorage.setItem('hirewale_worker_step1', JSON.stringify(payload));
+      // Navigate to Step 2 (Service Selection). Create this page next.
+      window.location.href = 'WRS-2.html';
+    });
+
+    // Initialize UI state
+    updateNextState();
+  </script>
+</body>
+</html>

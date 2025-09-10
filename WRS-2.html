@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hirewale — Worker Registration (Step 2)</title>
+  <style>
+    :root{
+      --brand-600:#0ea5e9; /* sky-500 */
+      --brand-700:#0284c7; /* sky-600 */
+      --ink:#0f172a;       /* slate-900 */
+      --muted:#64748b;     /* slate-500 */
+      --bg:#f8fafc;        /* slate-50 */
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0; font-family:Poppins,system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell, Noto Sans, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+      min-height:100svh; display:grid; place-items:center; color:var(--ink);
+      background: radial-gradient(1200px 600px at 10% 10%, #e0f2fe 0%, transparent 60%),
+                  radial-gradient(1000px 500px at 90% 20%, #bae6fd 0%, transparent 60%),
+                  linear-gradient(180deg, #f0f9ff 0%, #ffffff 40%, #f8fafc 100%);
+    }
+    .shell{width:min(100%, 680px); padding:32px; background:white; border-radius:16px; box-shadow:0 8px 20px rgba(0,0,0,0.08);}
+    header{ text-align:center; margin-bottom:18px }
+    .brand{font-weight:700; font-size:clamp(22px, 3.6vw, 34px); letter-spacing:0.2px}
+    .tag{color:var(--muted); font-size:clamp(12px, 2.2vw, 14px)}
+
+    .stepper{display:flex; gap:10px; align-items:center; justify-content:center; margin:18px 0 26px}
+    .dot{height:10px; width:10px; border-radius:99px; background:#e2e8f0; opacity:.7; transition:all .3s ease}
+    .dot.active{width:44px; background:var(--brand-600); opacity:1}
+
+    form{display:grid; gap:18px; margin-top:10px}
+    label{font-weight:500; font-size:14px; margin-bottom:4px; display:block}
+    input, select{
+      width:100%; padding:10px 12px; border:1px solid #cbd5e1; border-radius:8px;
+      font-size:14px; outline:none;
+    }
+    input:focus, select:focus{border-color:var(--brand-600); box-shadow:0 0 0 3px #bae6fd}
+    button{
+      background:var(--brand-600); color:white; font-weight:600; border:none; border-radius:8px;
+      padding:12px; cursor:pointer; font-size:15px; transition:background .3s;
+    }
+    button:hover{background:var(--brand-700)}
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <header>
+      <div class="brand">Hirewale · Worker Registration</div>
+      <div class="tag">Step 2 of 8 — Work Category Selection</div>
+    </header>
+
+    <div class="stepper" aria-hidden="true">
+      <div class="dot"></div>
+      <div class="dot active"></div>
+      <div class="dot"></div>
+      <div class="dot"></div>
+      <div class="dot"></div>
+      <div class="dot"></div>
+      <div class="dot"></div>
+      <div class="dot"></div>
+    </div>
+
+    <!-- Form -->
+    <form id="serviceForm">
+      <div>
+        <label for="serviceSearch">Search Service</label>
+        <input type="text" id="serviceSearch" placeholder="Type to search...">
+      </div>
+
+      <div>
+        <label for="serviceDropdown">Select from List</label>
+        <select id="serviceDropdown">
+          <option value="">-- Choose a service --</option>
+          <option>Plumber</option>
+          <option>Electrician</option>
+          <option>Driver</option>
+          <option>Carpenter</option>
+          <option>Tutor</option>
+          <option>Beautician</option>
+        </select>
+      </div>
+
+      <div>
+        <label for="customService">Not listed? Request your service</label>
+        <input type="text" id="customService" placeholder="Enter your service">
+      </div>
+
+      <button type="submit">Next →</button>
+    </form>
+  </div>
+
+  <script>
+    // Service search filter
+    const searchInput = document.getElementById('serviceSearch');
+    const dropdown = document.getElementById('serviceDropdown');
+    searchInput.addEventListener('input', () => {
+      const filter = searchInput.value.toLowerCase();
+      for (let i = 0; i < dropdown.options.length; i++) {
+        const txt = dropdown.options[i].text.toLowerCase();
+        dropdown.options[i].style.display = txt.includes(filter) || i === 0 ? '' : 'none';
+      }
+    });
+
+    // Form submission
+    document.getElementById('serviceForm').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const selectedService = dropdown.value;
+      const customService = document.getElementById('customService').value.trim();
+
+      if (!selectedService && !customService) {
+        alert('Please select or request a service.');
+        return;
+      }
+
+      // Save worker data
+      const workerData = JSON.parse(sessionStorage.getItem('workerData')) || {};
+      workerData.service = customService || selectedService;
+      sessionStorage.setItem('workerData', JSON.stringify(workerData));
+
+      // Redirect to step 3
+      window.location.href = 'WRS-3.html';
+    });
+  </script>
+</body>
+</html>

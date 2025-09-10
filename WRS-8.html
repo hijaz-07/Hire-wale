@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hirewale — Worker Registration (Step 8)</title>
+  <style>
+    :root{
+      --brand-600:#0ea5e9;
+      --brand-700:#0284c7;
+      --ink:#0f172a;
+      --muted:#64748b;
+      --bg:#f8fafc;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0; font-family:Poppins,system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,Noto Sans,Helvetica,Arial;
+      min-height:100svh; display:grid; place-items:center; color:var(--ink);
+      background: radial-gradient(1200px 600px at 10% 10%, #e0f2fe 0%, transparent 60%),
+                  radial-gradient(1000px 500px at 90% 20%, #bae6fd 0%, transparent 60%),
+                  linear-gradient(180deg, #f0f9ff 0%, #ffffff 40%, #f8fafc 100%);
+    }
+    .shell{width:min(100%,680px); padding:32px; background:white; border-radius:16px; box-shadow:0 8px 20px rgba(0,0,0,.08);}
+    header{text-align:center; margin-bottom:18px}
+    .brand{font-weight:700; font-size:clamp(22px,3.6vw,34px)}
+    .tag{color:var(--muted); font-size:clamp(12px,2.2vw,14px)}
+    .stepper{display:flex; gap:10px; justify-content:center; margin:18px 0 26px}
+    .dot{height:10px; width:10px; border-radius:99px; background:#e2e8f0; opacity:.7; transition:all .3s}
+    .dot.active{width:44px; background:var(--brand-600); opacity:1}
+    .summary{font-size:14px; line-height:1.5; color:var(--ink); background:#f9fafb; padding:16px; border-radius:8px;}
+    button{
+      background:var(--brand-600); color:white; font-weight:600; border:none; border-radius:8px;
+      padding:12px; cursor:pointer; font-size:15px; transition:background .3s; margin-top:16px;
+    }
+    button:hover{background:var(--brand-700)}
+    .success{color:var(--brand-600); font-weight:600; margin-top:12px; font-size:15px;}
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <header>
+      <div class="brand">Hirewale · Worker Registration</div>
+      <div class="tag">Step 8 of 8 — Review & Submit</div>
+    </header>
+
+    <div class="stepper" aria-hidden="true">
+      <div class="dot"></div>
+      <div class="dot"></div>
+      <div class="dot"></div>
+      <div class="dot"></div>
+      <div class="dot"></div>
+      <div class="dot"></div>
+      <div class="dot"></div>
+      <div class="dot active"></div>
+    </div>
+
+    <div class="summary" id="summaryBox">
+      <!-- Summary will be filled by JS -->
+    </div>
+
+    <button id="submitBtn">Submit Registration</button>
+    <p class="success" id="successMsg" style="display:none;">🎉 Registration successful! Redirecting to dashboard...</p>
+  </div>
+
+  <script>
+    const summaryBox = document.getElementById('summaryBox');
+    const submitBtn = document.getElementById('submitBtn');
+    const successMsg = document.getElementById('successMsg');
+
+    const workerData = JSON.parse(sessionStorage.getItem('workerData')) || {};
+
+    // Display summary
+    summaryBox.innerHTML = `
+      <p><strong>Full Name:</strong> ${workerData.fullName || '-'}</p>
+      <p><strong>Mobile Number:</strong> ${workerData.mobile || '-'}</p>
+      <p><strong>Email:</strong> ${workerData.email || '-'}</p>
+      <p><strong>Service Category:</strong> ${workerData.serviceCategory || '-'}</p>
+      <p><strong>Location:</strong> ${workerData.city || '-'}, ${workerData.area || '-'}</p>
+      <p><strong>Government ID:</strong> ${workerData.govIdFile || '-'}</p>
+      <p><strong>Profile Photo:</strong> ${workerData.profilePicFile || '-'}</p>
+      <p><strong>Certificate:</strong> ${workerData.certificateFile || 'None'}</p>
+      <p><strong>Intro Video:</strong> ${workerData.introVideoFile || 'None'}</p>
+      <p><strong>Bank Name:</strong> ${workerData.holderName || '-'}</p>
+      <p><strong>Account Number:</strong> ${workerData.accountNumber || '-'}</p>
+      <p><strong>IFSC:</strong> ${workerData.ifsc || '-'}</p>
+      <p><strong>UPI ID:</strong> ${workerData.upi || 'None'}</p>
+      <p><strong>Agreed Terms:</strong> ${workerData.agreedTerms ? 'Yes' : 'No'}</p>
+    `;
+
+    submitBtn.addEventListener('click', () => {
+      // In real app, send data to backend API here
+      successMsg.style.display = 'block';
+      submitBtn.disabled = true;
+
+      // Simulate redirect to dashboard after 2 seconds
+      setTimeout(() => {
+        // Here you would normally redirect after saving
+        window.location.href = 'W-dashboard.html';
+      }, 2000);
+    });
+  </script>
+</body>
+</html>
