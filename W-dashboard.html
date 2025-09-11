@@ -163,7 +163,7 @@
     document.getElementById('confirmLogout').addEventListener('click', ()=> { 
       sessionStorage.clear(); 
       addNotification("👋 Logged out successfully","info");
-      setTimeout(()=> window.location.href="home.html",1500);
+      setTimeout(()=> window.location.href="index.html",1500);
     });
     logoutBtn.addEventListener('click', ()=> logoutModal.style.display="flex");
 
@@ -237,3 +237,4 @@
   </script>
 </body>
 </html>
+
