@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Withdraw Funds</title>
+  <style>
+    :root{
+      --brand-success:#16a34a;
+      --brand-danger:#ef4444;
+      --brand-blue:#3b82f6;
+      --bg-dashboard:
+        radial-gradient(1200px 600px at 10% 10%, #e0f2fe 0%, transparent 60%),
+        radial-gradient(1000px 500px at 90% 20%, #bae6fd 0%, transparent 60%),
+        linear-gradient(180deg,#f0f9ff 0%,#ffffff 40%,#f8fafc 100%);
+      --glass-bg:rgba(255,255,255,0.65);
+      --glass-border:rgba(0,0,0,0.08);
+    }
+    body{
+      font-family:"Poppins",system-ui,Segoe UI,Roboto;
+      background:var(--bg-dashboard);
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      height:100vh;
+      margin:0;
+    }
+    .container{
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      gap:20px;
+    }
+    .btn{
+      padding:14px 28px;
+      border:none;
+      border-radius:12px;
+      font-weight:600;
+      cursor:pointer;
+      color:white;
+      font-size:15px;
+      background:linear-gradient(135deg,#0ea5e9,#3b82f6);
+      transition:transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .btn:hover{
+      transform:translateY(-2px) scale(1.03);
+      box-shadow:0 4px 12px rgba(0,0,0,0.15);
+    }
+    #backBtn{
+      background:linear-gradient(135deg,#22c55e,#16a34a);
+    }
+
+    /* Shared modal style */
+    .modal{
+      display:none;
+      position:fixed;
+      top:0;left:0;
+      width:100%;height:100%;
+      backdrop-filter:blur(6px);
+      background:rgba(0,0,0,0.35);
+      justify-content:center;
+      align-items:center;
+      z-index:1000;
+    }
+    .modal .modal-content{
+      background:var(--glass-bg);
+      border:1px solid var(--glass-border);
+      backdrop-filter:blur(18px);
+      padding:32px;
+      border-radius:20px;
+      max-width:380px;
+      width:100%;
+      text-align:center;
+      color:#0f172a;
+      box-shadow:0 8px 32px rgba(0,0,0,0.12);
+      animation:bounceIn 0.45s ease;
+    }
+    @keyframes bounceIn {
+      0% { opacity: 0; transform: scale(0.8); }
+      60% { opacity: 1; transform: scale(1.05); }
+      80% { transform: scale(0.95); }
+      100% { transform: scale(1); }
+    }
+    .modal h2{margin-bottom:16px;font-size:22px;font-weight:700;}
+    .modal p{margin-bottom:12px;font-size:15px;color:#334155;}
+    .modal input{
+      width:100%;
+      padding:12px;
+      border-radius:12px;
+      border:1px solid rgba(0,0,0,0.15);
+      margin-bottom:16px;
+      font-size:15px;
+      background:rgba(255,255,255,0.85);
+      color:#0f172a;
+      text-align:center;
+      outline:none;
+      transition:0.25s;
+    }
+    .modal input:focus{
+      border-color:#38bdf8;
+      box-shadow:0 0 8px rgba(56,189,248,0.4);
+    }
+
+    /* Remove arrows from number input */
+    input::-webkit-outer-spin-button,
+    input::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+    input[type=number] {
+      -moz-appearance: textfield;
+    }
+
+    #withdrawMessage, #passwordMessage{
+      font-size:14px;
+      margin-bottom:16px;
+      min-height:22px;
+      font-weight:600;
+      padding:8px 12px;
+      border-radius:8px;
+      display:inline-block;
+      animation:fadeIn 0.3s ease;
+    }
+    .msg-success{
+      background:#dcfce7;
+      color:#166534;
+      border:1px solid #16a34a;
+    }
+    .msg-error{
+      background:#fee2e2;
+      color:#991b1b;
+      border:1px solid #ef4444;
+    }
+    @keyframes fadeIn {
+      from { opacity:0; transform:translateY(-4px); }
+      to { opacity:1; transform:translateY(0); }
+    }
+    .modal-actions{
+      display:flex;
+      justify-content:center;
+      gap:12px;
+    }
+    .modal-actions button{
+      flex:1;
+      padding:12px;
+      border:none;
+      border-radius:12px;
+      cursor:pointer;
+      font-weight:600;
+      font-size:14px;
+      transition:transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .modal-actions button:hover{
+      transform:translateY(-2px) scale(1.03);
+      box-shadow:0 4px 12px rgba(0,0,0,0.15);
+    }
+    .confirmBtn{background:linear-gradient(135deg,#22c55e,#16a34a);color:white;}
+    .cancelBtn{background:linear-gradient(135deg,#ef4444,#dc2626);color:white;}
+
+    /* Highlighted amount */
+    .highlight-amount{
+      color:var(--brand-success);
+      font-weight:700;
+    }
+  </style>
+</head>
+<body>
+  <!-- Buttons -->
+  <div class="container">
+    <button id="withdrawBtn" class="btn">💸 Withdraw</button>
+    <button id="backBtn" class="btn">⬅ Back to Dashboard</button>
+  </div>
+
+  <!-- Step 1: Amount Modal -->
+  <div id="amountModal" class="modal">
+    <div class="modal-content">
+      <h2>Withdraw Funds</h2>
+      <p>Available Balance: ₹<span id="withdrawBalance">0</span></p>
+      <input type="number" id="withdrawAmount" placeholder="Enter amount">
+      <div id="withdrawMessage"></div>
+      <div class="modal-actions">
+        <button id="proceedPassword" class="confirmBtn">Next</button>
+        <button id="cancelAmount" class="cancelBtn">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Step 2: Password Modal -->
+  <div id="passwordModal" class="modal">
+    <div class="modal-content">
+      <h2 id="passwordHeading">Confirm Withdrawal</h2>
+      <p>Enter your password to proceed</p>
+      <input type="password" id="withdrawPassword" placeholder="Enter password">
+      <div id="passwordMessage"></div>
+      <div class="modal-actions">
+        <button id="confirmWithdraw" class="confirmBtn">Confirm</button>
+        <button id="cancelPassword" class="cancelBtn">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Load balance
+    let earnings = parseInt(sessionStorage.getItem("walletBalance"));
+    if (isNaN(earnings)) {
+      earnings = 5000;
+      sessionStorage.setItem("walletBalance", earnings);
+    }
+
+    // Example stored password
+    const storedPassword = sessionStorage.getItem("workerPassword") || "1234";
+
+    // Elements
+    const withdrawBtn = document.getElementById("withdrawBtn");
+    const backBtn = document.getElementById("backBtn");
+    const amountModal = document.getElementById("amountModal");
+    const passwordModal = document.getElementById("passwordModal");
+    const withdrawBalance = document.getElementById("withdrawBalance");
+    const withdrawAmount = document.getElementById("withdrawAmount");
+    const withdrawMessage = document.getElementById("withdrawMessage");
+    const withdrawPassword = document.getElementById("withdrawPassword");
+    const passwordMessage = document.getElementById("passwordMessage");
+    const passwordHeading = document.getElementById("passwordHeading");
+
+    let pendingAmount = 0;
+
+    function resetAmountModal() {
+      withdrawAmount.value = "";
+      withdrawMessage.textContent = "";
+      withdrawMessage.className = "";
+    }
+    function resetPasswordModal() {
+      withdrawPassword.value = "";
+      passwordMessage.textContent = "";
+      passwordMessage.className = "";
+    }
+
+    // Open amount modal
+    withdrawBtn.addEventListener("click", () => {
+      withdrawBalance.textContent = earnings;
+      resetAmountModal();
+      amountModal.style.display = "flex";
+    });
+
+    // Cancel amount modal
+    document.getElementById("cancelAmount").addEventListener("click", () => {
+      amountModal.style.display = "none";
+      resetAmountModal();
+    });
+
+    // Proceed to password modal
+    document.getElementById("proceedPassword").addEventListener("click", () => {
+      const amount = parseInt(withdrawAmount.value);
+      if (!amount || amount <= 0) {
+        withdrawMessage.textContent = "⚠ Please enter a valid amount.";
+        withdrawMessage.className = "msg-error";
+        return;
+      }
+      if (amount > earnings) {
+        withdrawMessage.textContent = "❌ Insufficient balance.";
+        withdrawMessage.className = "msg-error";
+        return;
+      }
+
+      pendingAmount = amount;
+      amountModal.style.display = "none";
+      resetPasswordModal();
+      passwordHeading.innerHTML = `Enter password to confirm withdrawing <span class="highlight-amount">₹${pendingAmount}</span>`;
+      passwordModal.style.display = "flex";
+    });
+
+    // Cancel password modal
+    document.getElementById("cancelPassword").addEventListener("click", () => {
+      passwordModal.style.display = "none";
+      resetPasswordModal();
+    });
+
+    // Add notification to dashboard
+    function addNotification(message, type="info") {
+      const saved = JSON.parse(sessionStorage.getItem("notifications")) || [];
+      saved.unshift({message, type, time: Date.now()});
+      sessionStorage.setItem("notifications", JSON.stringify(saved));
+    }
+
+    // Confirm withdrawal
+    document.getElementById("confirmWithdraw").addEventListener("click", () => {
+      const enteredPass = withdrawPassword.value;
+      if (!enteredPass) {
+        passwordMessage.textContent = "⚠ Please enter your password.";
+        passwordMessage.className = "msg-error";
+        return;
+      }
+      if (enteredPass !== storedPassword) {
+        passwordMessage.textContent = "❌ Incorrect password.";
+        passwordMessage.className = "msg-error";
+        return;
+      }
+
+      // Deduct balance
+      earnings -= pendingAmount;
+      sessionStorage.setItem("walletBalance", earnings);
+
+      passwordMessage.textContent = `✅ ₹${pendingAmount} withdrawn successfully!`;
+      passwordMessage.className = "msg-success";
+
+      // Add notification
+      addNotification(`💸 You withdrew ₹${pendingAmount} successfully!`, "success");
+
+      // Auto close
+      setTimeout(() => {
+        passwordModal.style.display = "none";
+        resetPasswordModal();
+      }, 1700);
+    });
+
+    // Back to dashboard
+    backBtn.addEventListener("click", () => {
+      window.location.href = "W-dashboard.html";
+    });
+  </script>
+</body>
+</html>
